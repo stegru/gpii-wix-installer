@@ -161,7 +161,7 @@
 
     <!-- We use asyncNoWait in order to not wait for their return codes -->
     <CustomAction Id="RunGPII" ExeCommand="[INSTALLFOLDER]\start.cmd" Directory="INSTALLFOLDER" Return="asyncNoWait" />
-    <CustomAction Id="RunTrayIcon" ExeCommand="[INSTALLFOLDER]\windows\trayicon.exe gpii-app.exe -show" Directory="INSTALLFOLDER" Return="asyncNoWait" />
+    <CustomAction Id="RunTrayIcon" ExeCommand="[INSTALLFOLDER]\windows\trayicon.exe -show gpii-app.exe GPII-App" Directory="INSTALLFOLDER" Return="asyncNoWait" />
 
     <!-- Install execute sequence of custom actions -->
     <InstallExecuteSequence>

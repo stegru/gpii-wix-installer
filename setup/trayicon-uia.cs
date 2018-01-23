@@ -67,7 +67,7 @@ namespace TrayIconApplication
 
         /// <summary>
         /// Gets the UWP process that owns the given window.
-        /// 
+        ///
         /// If the process owning the window is ApplicationFrameHost, then return the process that
         /// owns a child window with a class name of "Windows.UI.Core.CoreWindow".
         /// </summary>
@@ -161,7 +161,13 @@ namespace TrayIconApplication
                 SetWindowPos(hwnd, IntPtr.Zero, -windowRect.Right, windowRect.Top, 0, 0, SWP_NOOWNERZORDER | SWP_NOACTIVATE | SWP_NOSIZE | SWP_NOZORDER);
             }
 
-            PerformUIA(appToLock);
+            Thread t = new Thread(() => PerformUIA(appToLock));
+            t.Start();
+            bool success = t.Join(TimeSpan.FromSeconds(15));
+            if (!success)
+            {
+                t.Abort();
+            }
 
             if (hwnd != IntPtr.Zero)
             {
@@ -173,7 +179,7 @@ namespace TrayIconApplication
 
         /// <summary>Toggles the tray icon.</summary>
         /// <param name="appToLock">The name of the icon.</param>
-        private static void PerformUIA(string appToLock) { 
+        private static void PerformUIA(string appToLock) {
 
             Console.WriteLine(":: Initializing UI Automation.");
 
@@ -192,6 +198,8 @@ namespace TrayIconApplication
             int _tooglePattern = 10015;
 
             Console.WriteLine(":: Getting root node.");
+
+            Thread.Sleep(500);
             // The first step in calling UIA, is getting a CUIAutomation object.
             IUIAutomationElement rootElement = _automation.GetRootElement();
 
@@ -208,14 +216,13 @@ namespace TrayIconApplication
                 );
 
             Console.WriteLine(":: Waiting for 'ms-settings' app to be ready.");
+            Thread.Sleep(500);
             IUIAutomationElement settingsOpennedMark = rootElement.FindFirst(TreeScope.TreeScope_Subtree, waitSettingsOpenning);
             while (settingsOpennedMark == null)
             {
                 Thread.Sleep(200);
                 settingsOpennedMark = rootElement.FindFirst(TreeScope.TreeScope_Subtree, waitSettingsOpenning);
             }
-
-            var p = settingsOpennedMark.GetCachedParent();
 
             Console.WriteLine(":: 'ms-settings' app oppened sucessfully.");
 
@@ -273,7 +280,6 @@ namespace TrayIconApplication
             if (gpiiIconLockButton == null)
             {
                 Console.WriteLine("Error: No application with specified name found.");
-                Console.ReadKey();
                 return;
             }
             var triggerLockButton = (IUIAutomationTogglePattern)gpiiIconLockButton.GetCurrentPattern(_tooglePattern);
