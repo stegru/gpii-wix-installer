@@ -150,8 +150,6 @@
 
     <DirectoryRef Id="MorphicProgramDataFolder">
       <Component Id="MorphicFolderCleanup" DiskId="1" Guid="{1FBAD843-8E2E-489D-90F0-703B7241C993}">
-        <RemoveFile Id="CleanupMorphicFolder" Name="*" On="both"/>
-        <RemoveFolder Id="RemoveMorphicFolder" On="both"/>
       </Component>
     </DirectoryRef>
 
